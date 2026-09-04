@@ -1,3 +1,5 @@
+import DataSourceSwitcher from './DataSourceSwitcher'
+
 function Header() {
   return (
     <header className="topbar">
@@ -10,6 +12,7 @@ function Header() {
         <a href="#">Réglage</a>
         <a href="#">Communauté</a>
       </nav>
+      <DataSourceSwitcher />
     </header>
   )
 }

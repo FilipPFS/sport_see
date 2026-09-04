@@ -5,47 +5,92 @@ import {
   getUserAverageSessionsById,
   getUserPerformanceById,
 } from "../services/userService";
+import { useDataSource } from "../context/DataSourceContext";
 import KeyDataCard from "../components/KeyDataCard";
 
+const USER_ID = 12;
+
 function Home() {
+  const { source } = useDataSource();
+
   const [user, setUser] = useState(null);
   const [activity, setActivity] = useState(null);
   const [averageSessions, setAverageSessions] = useState(null);
   const [performance, setPerformance] = useState(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const res = await getUserInfoById(12);
-      setUser(res.data);
-    };
-    const fetchActivity = async () => {
-      const res = await getUserActivityById(12);
-      setActivity(res.data);
-    };
-    const fetchAverageSessions = async () => {
-      const res = await getUserAverageSessionsById(12);
-      setAverageSessions(res.data);
-    };
-    const fetchPerformance = async () => {
-      const res = await getUserPerformanceById(12);
-      setPerformance(res.data);
-    };
-    fetchUser();
-    fetchActivity();
-    fetchAverageSessions();
-    fetchPerformance();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  // Vraie source utilisée après coup (peut différer de `source` si l'API a échoué).
+  const [effectiveSource, setEffectiveSource] = useState(source);
 
-  if (!user) {
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [userRes, activityRes, sessionsRes, perfRes] = await Promise.all([
+          getUserInfoById(USER_ID, source),
+          getUserActivityById(USER_ID, source),
+          getUserAverageSessionsById(USER_ID, source),
+          getUserPerformanceById(USER_ID, source),
+        ]);
+
+        if (cancelled) return;
+
+        setUser(userRes.data);
+        setActivity(activityRes.data);
+        setAverageSessions(sessionsRes.data);
+        setPerformance(perfRes.data);
+
+        // Si au moins un appel a basculé sur les mocks, on le signale.
+        const usedMock = [userRes, activityRes, sessionsRes, perfRes].some(
+          (r) => r.source === "mock",
+        );
+        setEffectiveSource(usedMock ? "mock" : "api");
+      } catch (err) {
+        if (cancelled) return;
+        setError(err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [source]);
+
+  if (loading && !user) {
     return <p className="loading">Chargement...</p>;
+  }
+
+  if (error || !user) {
+    return (
+      <p className="loading">
+        Impossible de charger les données{" "}
+        {error?.message ? `(${error.message})` : ""}
+      </p>
+    );
   }
 
   const { firstName } = user.userInfos;
   const { calorieCount, proteinCount, carbohydrateCount, lipidCount } =
     user.keyData;
 
+  const fellBackToMock = source === "api" && effectiveSource === "mock";
+
   return (
     <main className="content">
+      {fellBackToMock && (
+        <p className="data-source-banner">
+          ⚠️ L'API est injoignable : affichage des données mockées.
+        </p>
+      )}
+
       <h1>
         Bonjour <span className="accent">{firstName}</span>
       </h1>

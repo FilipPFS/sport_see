@@ -1,23 +1,48 @@
 import axios from "axios";
+import {
+  getMockUserInfoById,
+  getMockUserActivityById,
+  getMockUserAverageSessionsById,
+  getMockUserPerformanceById,
+} from "../mocks/mockData";
 
 const BASE_URL = "http://localhost:3000/user";
 
-export async function getUserInfoById(id) {
-  const response = await axios.get(`${BASE_URL}/${id}`);
-  return response.data;
+async function fetchResource(source, apiPath, getMock) {
+  if (source === "mock") {
+    return { data: getMock().data, source: "mock" };
+  }
+
+  try {
+    const response = await axios.get(`${BASE_URL}${apiPath}`);
+    return { data: response.data.data, source: "api" };
+  } catch (error) {
+    console.warn(
+      `Appel API échoué (${apiPath}), utilisation des données mockées.`,
+      error,
+    );
+    return { data: getMock().data, source: "mock", error };
+  }
 }
 
-export async function getUserActivityById(id) {
-  const response = await axios.get(`${BASE_URL}/${id}/activity`);
-  return response.data;
+export function getUserInfoById(id, source = "api") {
+  return fetchResource(source, `/${id}`, () => getMockUserInfoById(id));
 }
 
-export async function getUserAverageSessionsById(id) {
-  const response = await axios.get(`${BASE_URL}/${id}/average-sessions`);
-  return response.data;
+export function getUserActivityById(id, source = "api") {
+  return fetchResource(source, `/${id}/activity`, () =>
+    getMockUserActivityById(id),
+  );
 }
 
-export async function getUserPerformanceById(id) {
-  const response = await axios.get(`${BASE_URL}/${id}/performance`);
-  return response.data;
+export function getUserAverageSessionsById(id, source = "api") {
+  return fetchResource(source, `/${id}/average-sessions`, () =>
+    getMockUserAverageSessionsById(id),
+  );
+}
+
+export function getUserPerformanceById(id, source = "api") {
+  return fetchResource(source, `/${id}/performance`, () =>
+    getMockUserPerformanceById(id),
+  );
 }

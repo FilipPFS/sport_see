@@ -33,6 +33,43 @@
   gap: 48px;
 }
 
+/* Data source switcher */
+.data-source-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.data-source-switcher__label {
+  color: #fff;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.data-source-switcher button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.data-source-switcher button.is-active {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.data-source-banner {
+  background: #fdebec;
+  color: #b91c1c;
+  border-radius: 5px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
 .topbar nav a {
   color: #fff;
   text-decoration: none;
