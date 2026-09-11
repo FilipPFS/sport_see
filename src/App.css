@@ -160,25 +160,82 @@
   gap: 30px;
 }
 
-.placeholder {
-  background: #fff;
+/* Chart cards */
+.chart-card {
+  position: relative;
   border-radius: 5px;
   box-shadow: var(--card-shadow);
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 16px;
+  background: #fbfbfb;
+  padding: 24px;
 }
 
-.daily-activity {
+.chart-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #20253a;
+}
+
+.chart-card.daily-activity {
   height: 320px;
+  background: #fbfbfb;
 }
 
-.charts-row .placeholder {
+.charts-row .chart-card {
   flex: 1;
   height: 260px;
+  overflow: hidden;
+}
+
+/* Durée moyenne des sessions */
+.chart-card.session-duration {
+  background: var(--red);
+  padding: 0;
+}
+
+.session-duration .chart-card__title {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+  max-width: 150px;
+}
+
+/* Intensité (radar) */
+.chart-card.intensity {
+  background: #282d30;
+  padding: 12px;
+}
+
+/* Score */
+.chart-card.score {
+  background: #fbfbfb;
+}
+
+.score .chart-card__title {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 1;
+}
+
+.score__center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.score__center strong {
+  display: block;
+  font-size: 26px;
+  color: var(--text-h);
+  margin-bottom: 4px;
 }
 
 .key-data {
@@ -222,18 +279,45 @@
   margin-top: 4px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1280px) {
+  .content {
+    padding: 40px 40px;
+  }
+
   .dashboard-grid {
-    flex-direction: column;
+    gap: 20px;
+    margin-top: 32px;
+  }
+
+  .charts,
+  .charts-row {
+    gap: 20px;
+  }
+
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-card.daily-activity {
+    height: 280px;
+  }
+
+  .charts-row .chart-card {
+    height: 210px;
   }
 
   .key-data {
-    width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
+    width: 200px;
+    gap: 16px;
   }
 
   .key-data-card {
-    flex: 1 1 calc(50% - 13px);
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .key-data-icon {
+    width: 48px;
+    height: 48px;
   }
 }

@@ -7,6 +7,10 @@ import {
 } from "../services/userService";
 import { useDataSource } from "../context/DataSourceContext";
 import KeyDataCard from "../components/KeyDataCard";
+import DailyActivityChart from "../components/charts/DailyActivityChart";
+import AverageSessionsChart from "../components/charts/AverageSessionsChart";
+import PerformanceChart from "../components/charts/PerformanceChart";
+import ScoreChart from "../components/charts/ScoreChart";
 
 const USER_ID = 12;
 
@@ -20,7 +24,6 @@ function Home() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // Vraie source utilisée après coup (peut différer de `source` si l'API a échoué).
   const [effectiveSource, setEffectiveSource] = useState(source);
 
   useEffect(() => {
@@ -45,7 +48,6 @@ function Home() {
         setAverageSessions(sessionsRes.data);
         setPerformance(perfRes.data);
 
-        // Si au moins un appel a basculé sur les mocks, on le signale.
         const usedMock = [userRes, activityRes, sessionsRes, perfRes].some(
           (r) => r.source === "mock",
         );
@@ -80,6 +82,7 @@ function Home() {
   const { firstName } = user.userInfos;
   const { calorieCount, proteinCount, carbohydrateCount, lipidCount } =
     user.keyData;
+  const score = user.todayScore ?? user.score ?? 0;
 
   const fellBackToMock = source === "api" && effectiveSource === "mock";
 
@@ -100,13 +103,14 @@ function Home() {
 
       <div className="dashboard-grid">
         <div className="charts">
-          <div className="placeholder daily-activity">Activité quotidienne</div>
+          <DailyActivityChart sessions={activity?.sessions} />
           <div className="charts-row">
-            <div className="placeholder session-duration">
-              Durée moyenne des sessions
-            </div>
-            <div className="placeholder intensity">Intensité</div>
-            <div className="placeholder score">Score</div>
+            <AverageSessionsChart sessions={averageSessions?.sessions} />
+            <PerformanceChart
+              kind={performance?.kind}
+              data={performance?.data}
+            />
+            <ScoreChart score={score} />
           </div>
         </div>
 
@@ -137,42 +141,6 @@ function Home() {
           />
         </div>
       </div>
-
-      {user && (
-        <div className="activity-debug">
-          <h2>Informations utilisateur (debug)</h2>
-          <pre>
-            <code>{JSON.stringify(user, null, 2)}</code>
-          </pre>
-        </div>
-      )}
-
-      {activity && (
-        <div className="activity-debug">
-          <h2>Données d'activité (debug)</h2>
-          <pre>
-            <code>{JSON.stringify(activity, null, 2)}</code>
-          </pre>
-        </div>
-      )}
-
-      {averageSessions && (
-        <div className="activity-debug">
-          <h2>Durée moyenne des sessions (debug)</h2>
-          <pre>
-            <code>{JSON.stringify(averageSessions, null, 2)}</code>
-          </pre>
-        </div>
-      )}
-
-      {performance && (
-        <div className="activity-debug">
-          <h2>Performance (debug)</h2>
-          <pre>
-            <code>{JSON.stringify(performance, null, 2)}</code>
-          </pre>
-        </div>
-      )}
     </main>
   );
 }
