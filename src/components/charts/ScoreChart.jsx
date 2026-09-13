@@ -3,10 +3,12 @@ import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 function ScoreChart({ score = 0 }) {
   const percent = Math.round(score * 100);
 
+  // deux parts qui forment l'anneau : la portion atteinte et le reste transparent
   const arc = [
     { name: "score", value: score },
     { name: "reste", value: 1 - score },
   ];
+  // disque blanc en dessous de l'anneau pour cacher le fond de la carte
   const center = [{ name: "center", value: 1 }];
 
   return (
@@ -31,6 +33,7 @@ function ScoreChart({ score = 0 }) {
             cy="50%"
             innerRadius="70%"
             outerRadius="80%"
+            // commence en haut (90°) et fait un tour complet dans le sens horaire
             startAngle={90}
             endAngle={450}
             cornerRadius={10}

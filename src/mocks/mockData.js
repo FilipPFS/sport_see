@@ -17,6 +17,7 @@ export const MOCK_USER_MAIN_DATA = {
     data: {
       id: 18,
       userInfos: { firstName: "Cecilia", lastName: "Ratorez", age: 34 },
+      // ce profil utilise "score" au lieu de "todayScore", d'où le fallback côté Home
       score: 0.3,
       keyData: {
         calorieCount: 2500,
@@ -135,11 +136,13 @@ export const MOCK_USER_PERFORMANCE = {
   },
 };
 
+// évite de dupliquer le message d'erreur dans chaque fonction ci-dessous
 const NOT_FOUND = (id) =>
   new Error(`Aucune donnée mockée pour l'utilisateur ${id}`);
 
 export function getMockUserInfoById(id) {
   const entry = MOCK_USER_MAIN_DATA[id];
+  // seuls les ids 12 et 18 ont des données mockées, tout autre id est invalide ici
   if (!entry) throw NOT_FOUND(id);
   return entry;
 }
@@ -156,6 +159,7 @@ export function getMockUserAverageSessionsById(id) {
   return entry;
 }
 
+// même structure que les fonctions précédentes, propre à l'endpoint performance
 export function getMockUserPerformanceById(id) {
   const entry = MOCK_USER_PERFORMANCE[id];
   if (!entry) throw NOT_FOUND(id);

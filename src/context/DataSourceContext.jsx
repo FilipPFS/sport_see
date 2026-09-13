@@ -11,13 +11,16 @@ const DataSourceContext = createContext(null);
 
 function readInitialSource() {
   try {
+    // on ne garde la valeur stockée que si elle est encore valide
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "api" || stored === "mock") return stored;
   } catch {}
+  // localStorage peut être indisponible (navigation privée) ou vide au premier lancement
   return "api";
 }
 
 export function DataSourceProvider({ children }) {
+  // readInitialSource passée en référence pour ne lire le storage qu'au premier rendu
   const [source, setSource] = useState(readInitialSource);
 
   useEffect(() => {
@@ -26,6 +29,7 @@ export function DataSourceProvider({ children }) {
     } catch {}
   }, [source]);
 
+  // permet de basculer manuellement entre l'API et les données mockées depuis l'UI
   const toggleSource = useCallback(() => {
     setSource((prev) => (prev === "api" ? "mock" : "api"));
   }, []);

@@ -34,6 +34,7 @@ function Home() {
       setError(null);
 
       try {
+        // on lance les 4 appels en parallèle pour ne pas attendre chaque requête l'une après l'autre
         const [userRes, activityRes, sessionsRes, perfRes] = await Promise.all([
           getUserInfoById(USER_ID, source),
           getUserActivityById(USER_ID, source),
@@ -41,6 +42,7 @@ function Home() {
           getUserPerformanceById(USER_ID, source),
         ]);
 
+        // évite de mettre à jour le state si le composant a été démonté entre temps
         if (cancelled) return;
 
         setUser(userRes.data);
@@ -48,6 +50,7 @@ function Home() {
         setAverageSessions(sessionsRes.data);
         setPerformance(perfRes.data);
 
+        // si l'API a échoué sur au moins une requête, le service a basculé sur le mock
         const usedMock = [userRes, activityRes, sessionsRes, perfRes].some(
           (r) => r.source === "mock",
         );
@@ -82,8 +85,10 @@ function Home() {
   const { firstName } = user.userInfos;
   const { calorieCount, proteinCount, carbohydrateCount, lipidCount } =
     user.keyData;
+  // le champ n'a pas le même nom selon les endpoints, donc on prend celui qui existe
   const score = user.todayScore ?? user.score ?? 0;
 
+  // on affiche le bandeau seulement si l'utilisateur voulait l'API mais qu'on a dû basculer sur le mock
   const fellBackToMock = source === "api" && effectiveSource === "mock";
 
   return (
@@ -103,6 +108,7 @@ function Home() {
 
       <div className="dashboard-grid">
         <div className="charts">
+          {/* optional chaining car les données peuvent arriver après le premier rendu */}
           <DailyActivityChart sessions={activity?.sessions} />
           <div className="charts-row">
             <AverageSessionsChart sessions={averageSessions?.sessions} />

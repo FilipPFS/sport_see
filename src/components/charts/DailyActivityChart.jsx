@@ -10,11 +10,14 @@ import {
 } from "recharts";
 
 function DailyActivityChart({ sessions = [] }) {
+  // l'axe des jours affiche juste un numéro de séance (1 à 7), pas la vraie date
   const data = sessions.map((s, i) => ({
     index: i + 1,
     kilogram: s.kilogram,
     calories: s.calories,
   }));
+
+  console.log(data);
 
   return (
     <div className="chart-card daily-activity">
@@ -33,10 +36,10 @@ function DailyActivityChart({ sessions = [] }) {
             stroke="#dedede"
             dy={10}
           />
+          {/* domaine resserré autour du poids pour que les variations restent lisibles */}
           <YAxis
             yAxisId="kg"
             orientation="right"
-            dataKey="kilogram"
             domain={["dataMin - 2", "dataMax + 1"]}
             tickCount={3}
             axisLine={false}
@@ -44,6 +47,7 @@ function DailyActivityChart({ sessions = [] }) {
             tick={{ fill: "#9b9eac", fontSize: 14 }}
             dx={20}
           />
+          {/* axe caché mais indispensable pour donner leur propre échelle aux calories */}
           <YAxis yAxisId="cal" hide domain={[0, "dataMax + 100"]} />
           <Tooltip
             contentStyle={{ background: "#e60000", border: "none" }}
